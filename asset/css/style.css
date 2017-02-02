@@ -1,0 +1,16 @@
+.container
+{
+	background-image: url("../images/calssical-image-2.jpg");
+	color:#4aaaa5;
+}
+h1{
+	font-family: Helvetica, Monospace; 
+	padding-top: 50px;
+	height:100px;
+	text-align: center;
+}
+h2{
+	text-align: center;
+	
+	height:70px;
+}
