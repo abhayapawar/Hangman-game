@@ -1,86 +1,123 @@
-document.onkeyup=function(event){
-
-	var userGuess =event.key;
-	var win=0;
-
-	alart("Letters already Guessed" + userGuess);
-}
-		
-		var availableLetters = "abcdefghijklmnopqrstuvwxyz";
-        var lives = 5;
-       	var words = ["Ravishanker", "shivkumar",  "bhimsenjoshi"];
-        var messages = {
-        	 win: 0,
-            lose: 0,
-            guessed: ' already guessed, please try again...',
-        };
-        var starry = words[1].split('');
-        var i = 0;
-
-		starry.forEach(function(element){
-	
-			if(element === "s"){
-		//
-		console.log(i);
-	}
-})
-	i++;
-         var lettersGuessed;
-         var lettersMatched;
-
-         lettersGuessed = lettersMatched = '';
-        var numLettersMatched = 0;
-        
-
-        var currentWord = words[Math.floor(Math.random() * words.length)];
-		var  guessInput = document.getElementById("letter");
+var guessedLetters = [];
+var lifeRemaining;
+var wordBank = ["Ravishanker", "Shivkumar", "Zakirhussain"];
+var currentWord;
+var foundCount;  //This keeps track of how many letters are already found in current word
+var currentDisplayWord = [""];
 
 
-		function letterChecker(x){
+//If the returned array is empty, the guessed letter is not present in the word
+function checkWordForLetter(word, letter)
+{
+	console.log("Checking Word: " + word + " for letter " + letter);
 
-	var muscian=["r","a","v","i","s","h","n","k","u","m","b","i","e","j","o"];
-
-
-		for( var i=0; i< musican.length; i++){
-			if(x === muscian[i]){
-				var isletter= true;
-				win++;
-			}
-
-				if(isletter){
-					console.log(x + "letter in the word");
-				}
+	var positionsFound = []; // This contains the positions in the word where letter is found
+	var starray = word.split(''); //This is the letter array of word
+	for(var i=0; i<starray.length; i++)
+	{
+		if(starray[i]===letter)
+		{
+			console.log("Match found at position: " + i);
+			positionsFound.push(i);
 		}
-
+	}
+	return 	positionsFound;
 }
-//letterChecker(a);
 
-		var Game = function(lives, letter, guesses){	
-	    this.lives = lives;
-	    this.letter = letter;
-	    this.guesses = guesses;
-	    this.letter_letters = new Set(this.letter);
-	    this.correct_guesses = intersection(this.guesses, this.letter_letters);
-	    this.incorrect_guesses = difference(this.guesses, this.letter_letters);	
-	    this.is_dead = this.lives <= this.incorrect_guesses.size;
-	    this.has_won = this.correct_guesses.size == this.letter_letters.size;
-        
-	   this.addGuess = function(letter1){
-	        return Game(this.lives, this.letter,
-		    this.guesses.add(letter1));
-	    }
-	    return this;	
-    }
-     	//var output = document.getElementById("output");
-       	//var man = document.getElementById("man");
-        //var guessInput = document.getElementById("letter");
 
-        //man.innerHTML = ('You have ' + lives + ' lives remaining');
-        //output.innerHTML = '';
+function isLetterAlreadyGuessed(letter)
+{ 
+	for(i=0;  i<guessedLetters.length;  i++)
+	{
+		if (letter === guessedLetters[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
-        //document.getElementById("letter").value = '';
+document.onkeyup=function(event){
+	var userGuess = event.key;
+	console.log("User pressed: " + userGuess);
 
-       
-        //var guessButton = document.getElementById("guess");
-       // var guessInput.style.display = 'inline';
-        //var guessButton.style.display = 'inline';
+
+    
+	if(isLetterAlreadyGuessed(userGuess)===true)
+	{
+		
+		console.log("Letter already used: " + userGuess);
+		document.getElementById("alreadyGuessed").innerHTML = "Letter already guessed: " + userGuess;
+		return;			
+	}
+
+		document.getElementById("alreadyGuessed").innerHTML = "";
+	    document.getElementById("guessletter").innerHTML = "You Guessed: " + userGuess;
+    
+
+
+	
+	guessedLetters.push(userGuess); 
+    
+    
+	var positionsFound = checkWordForLetter(currentWord, userGuess);
+
+	
+	var totalCharsFound = positionsFound.length;
+	if(totalCharsFound===0)
+	{
+		lifeRemaining--; //Wrong Guess
+		console.log("Oops! wrong guess");
+		document.getElementById("guessesRemaining").innerHTML = "You have "+ lifeRemaining + " guesses left ";
+
+		
+		if(lifeRemaining === 0)
+		{
+			console.log(" You lose!");
+			document.getElementById("lose").innerHTML ="you lose" ;
+			restart();
+		}
+	}
+	else
+	{
+		foundCount += totalCharsFound;
+		for(i=0; i<totalCharsFound; i++)
+		{
+			currentDisplayWord[positionsFound[i]] = userGuess;
+		}			
+
+		if(foundCount === currentWord.length)
+		{
+			console.log(" You win!");
+			document.getElementById("win").innerHTML = "you win" + foundCount;
+			restart();	
+		}	
+	}
+	
+	console.log("Current status of the revealed word is: " + currentDisplayWord.toString());
+
+	document.getElementById("currentWord").innerHTML = currentDisplayWord;
+}
+
+
+function restart(){
+	//Reset everything when user exausts all his/her guesses
+	console.log("I am restarting");
+	guessedLetters = [];
+	lifeRemaining = 5;
+	currentWord = wordBank[Math.floor(Math.random() * wordBank.length)];
+
+	currentDisplayWord = [];
+	for(i=0; i<currentWord.length; ++i)
+	{
+		currentDisplayWord.push('-');
+	}
+	
+
+	console.log("Current status of the revealed word is: " + currentDisplayWord);
+	console.log("Current word is: " + currentWord);	
+	document.getElementById("restart").innerHTML = "Restart" + guessedLetters;
+
+	foundCount = 0;
+}
+

@@ -14,3 +14,8 @@ h2{
 	
 	height:70px;
 }
+#hangman{
+	width:250px;
+	height:200px;
+	 border: 2px dashed black;
+}
